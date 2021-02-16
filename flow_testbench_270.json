@@ -1,1 +1,916 @@
-[]
+[
+    {
+        "id": "664be1c9.e5408",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f444ff85.19d2e",
+        "type": "websocket-listener",
+        "path": "/ws/test_benchmark",
+        "wholemsg": "false"
+    },
+    {
+        "id": "dec5f811.c2e608",
+        "type": "websocket-listener",
+        "path": "/ws/real_datetime",
+        "wholemsg": "false"
+    },
+    {
+        "id": "2f4e7963.b67116",
+        "type": "websocket-listener",
+        "path": "/ws/app_generals",
+        "wholemsg": "false"
+    },
+    {
+        "id": "73fe4894.b72678",
+        "type": "MySQLdatabase",
+        "name": "testbenchx",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "testbenchsx",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "d8c800c8.2049b",
+        "type": "inject",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "2",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 40,
+        "wires": [
+            [
+                "5294809a.4e521"
+            ]
+        ]
+    },
+    {
+        "id": "5294809a.4e521",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "QUERY",
+        "func": "msg.topic = `\nSELECT\n    tb_ilt.id,\n    tb_ilt.ilt_tb_no,\n    tb_ilt.ilt_eg_code,\n    tb_ilt.ilt_eg_no,\n    tb_ilt.ilt_group,\n    tb_ilt.ilt_shift,\n    tb_ilt.ilt_cv_bensin,\n    tb_ilt.ilt_cv_airoli,\n    tb_ilt.ilt_cv_gasco,\n    tb_ilt.ilt_cv_campur,\n    tb_ilt.ilt_cv_salah,\n    tb_ilt.ilt_cv_lain,\n    tb_ilt.ilt_cv_ketlain,\n    tb_ilt.ilt_idling_judge,\n    tb_ilt.ilt_idling_value,\n    tb_ilt.ilt_idling_hh,\n    tb_ilt.ilt_idling_ll,\n    tb_ilt.ilt_vacuum_judge,\n    tb_ilt.ilt_vacuum_value,\n    tb_ilt.ilt_vacuum_hh,\n    tb_ilt.ilt_vacuum_ll,\n    tb_ilt.ilt_disconnect,\n    tb_ilt.ilt_rough_idle,\n    tb_ilt.ilt_vvt_in,\n    tb_ilt.ilt_vvt_ex,\n    tb_ilt.ilt_operator,\n    tb_ilt.ilt_created_at,\n    tbr.*\nFROM\n    tb_ilt\n    LEFT JOIN (\n\tSELECT\n        tb_rep.rep_tb_no AS rep_tb_no,\n        tb_rep.rep_eg_code AS rep_eg_code,\n        tb_rep.rep_eg_no AS rep_eg_no,\n        tb_rep.rep_group AS rep_group,\n        tb_rep.rep_shift AS rep_shift,\n        tb_rep.rep_cv_bensin AS rep_cv_bensin,\n        tb_rep.rep_cv_airoli AS rep_cv_airoli,\n        tb_rep.rep_cv_gasco AS rep_cv_gasco,\n        tb_rep.rep_cv_campur AS rep_cv_campur,\n        tb_rep.rep_cv_salah AS rep_cv_salah,\n        tb_rep.rep_idling_judge AS rep_idling_judge,\n        tb_rep.rep_idling_value AS rep_idling_value,\n        tb_rep.rep_idling_hh AS rep_idling_hh,\n        tb_rep.rep_idling_ll AS rep_idling_ll,\n        tb_rep.rep_vacuum_judge AS rep_vacuum_judge,\n        tb_rep.rep_vacuum_value AS rep_vacuum_value,\n        tb_rep.rep_vacuum_hh AS rep_vacuum_hh,\n        tb_rep.rep_vacuum_ll AS rep_vacuum_ll,\n        tb_rep.rep_disconnect AS rep_disconnect,\n        tb_rep.rep_rough_idle AS rep_rough_idle,\n        tb_rep.rep_vvt_in AS rep_vvt_in,\n        tb_rep.rep_vvt_ex AS rep_vvt_ex,\n        tb_rep.rep_problem AS rep_problem,\n        tb_rep.rep_counter AS rep_counter,\n        tb_rep.rep_operator AS rep_operator,\n        tb_rep.id AS rep_id,\n        max(tb_rep.rep_created_at) AS rep_created_at\n    FROM\n        tb_rep\n    WHERE\n\t\ttb_rep.rep_deleted_at IS NULL AND\n        DATE(tb_rep.rep_created_at) = CURDATE()\n    GROUP BY\n\t\ttb_rep.id, \n\t\ttb_rep.rep_eg_no,\n\t\ttb_rep.rep_created_at\n    ORDER BY tb_rep.rep_created_at DESC\n\t) AS tbr ON tbr.rep_eg_no = tb_ilt.ilt_eg_no\nWHERE\n\ttb_ilt.ilt_deleted_at IS NULL AND\n    DATE(tb_ilt.ilt_created_at) = CURDATE() AND\n    tb_ilt.ilt_group = (select current_group from tb_general) AND \n    tb_ilt.ilt_shift = (select current_shift from tb_general)\nGROUP BY\n\ttb_ilt.ilt_eg_no\nORDER BY\n\ttb_ilt.id DESC\n`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 280,
+        "y": 40,
+        "wires": [
+            [
+                "6baf77c4.7bb5c8"
+            ]
+        ]
+    },
+    {
+        "id": "de620e87.efa63",
+        "type": "websocket out",
+        "z": "664be1c9.e5408",
+        "name": "/ws/test_benchmark",
+        "server": "f444ff85.19d2e",
+        "client": "",
+        "x": 680,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "f61e86a7.a4d3e8",
+        "type": "inject",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 160,
+        "wires": [
+            [
+                "15287d48.61d1f3"
+            ]
+        ]
+    },
+    {
+        "id": "15287d48.61d1f3",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "DATETIME EXPLODE",
+        "func": "var monthNames = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\",\n  \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"\n];\nvar datetime = new Date();\nvar day = `${datetime.getDate()}`.padStart(2, \"0\");\nvar month = `${datetime.getMonth() + 1}`.padStart(2, \"0\");\n\nmonthName = monthNames[datetime.getMonth()];\nvar year = datetime.getFullYear();\nvar curDate = day + \" \" + monthName + \" \" + year;\n\nvar hours = `${datetime.getHours()}`.padStart(2, \"0\");\nvar minutes = `${datetime.getMinutes()}`.padStart(2, \"0\");\nvar seconds = `${datetime.getSeconds()}`.padStart(2, \"0\");\nvar curTime = hours + \":\" + minutes + \":\" + seconds;\n\nmsg.payload = {\n    curdate: curDate,\n    curtime: curTime,\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 320,
+        "y": 160,
+        "wires": [
+            [
+                "43e646ef.5c1978"
+            ]
+        ]
+    },
+    {
+        "id": "43e646ef.5c1978",
+        "type": "websocket out",
+        "z": "664be1c9.e5408",
+        "name": "/ws/real_datetime",
+        "server": "dec5f811.c2e608",
+        "client": "",
+        "x": 550,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "3c2478d2.836448",
+        "type": "inject",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "2",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 280,
+        "wires": [
+            [
+                "d2cf2295.91e1b"
+            ]
+        ]
+    },
+    {
+        "id": "d2cf2295.91e1b",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "QUERY",
+        "func": "msg.topic = `\nSELECT\n\ttb_general.id,\n\ttb_general.current_group,\n\ttb_general.current_shift,\n\ttb_general.status_production,\n\ttb_general.created_at \nFROM\n\ttb_general \nORDER BY\n\tcreated_at DESC \n\tLIMIT 1\n`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 280,
+        "y": 280,
+        "wires": [
+            [
+                "c46cbc62.3029f"
+            ]
+        ]
+    },
+    {
+        "id": "52f42ca9.53dea4",
+        "type": "websocket out",
+        "z": "664be1c9.e5408",
+        "name": "/ws/app_generals",
+        "server": "2f4e7963.b67116",
+        "client": "",
+        "x": 670,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "883c6e32.ee4c3",
+        "type": "http in",
+        "z": "664be1c9.e5408",
+        "name": "IN API",
+        "url": "/api/trace_engine_old",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 400,
+        "wires": [
+            [
+                "64749a2a.ebf854"
+            ]
+        ]
+    },
+    {
+        "id": "64749a2a.ebf854",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "EXPLODE",
+        "func": "var engine_number = msg.payload.engine_number;\nconsole.log(engine_number)\nvar engine_number_ba = msg.payload.engine_number_ba;\nvar engine_number_length = engine_number.length;\n// var eg_code = engine_number.slice(0, 3);\n// var eg_number = engine_number.slice(3, engine_number_length);\n\nvar query = `select * from tb_ilt where ilt_eg_no = '${engine_number}'`;\n\nmsg.data = {\n    eg_number: engine_number,\n    limit: engine_number_ba,\n    query: query\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 290,
+        "y": 400,
+        "wires": [
+            [
+                "5f498be0.7ac114"
+            ]
+        ]
+    },
+    {
+        "id": "5f498be0.7ac114",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "QUERY",
+        "func": "msg.topic = msg.data.query;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 100,
+        "y": 520,
+        "wires": [
+            [
+                "ce2c4ec4.e879d"
+            ]
+        ]
+    },
+    {
+        "id": "b166a005.95267",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query OLD",
+        "func": "if(msg.statusCode == 200){\n    var id = msg.payload[0].id;\n    var query = `\n    SELECT\n    tb_ilt.id,\n    tb_ilt.ilt_tb_no,\n    tb_ilt.ilt_eg_code,\n    tb_ilt.ilt_eg_no,\n    tb_ilt.ilt_group,\n    tb_ilt.ilt_shift,\n    tb_ilt.ilt_cv_bensin,\n    tb_ilt.ilt_cv_airoli,\n    tb_ilt.ilt_cv_gasco,\n    tb_ilt.ilt_cv_campur,\n    tb_ilt.ilt_cv_salah,\n    tb_ilt.ilt_cv_lain,\n    tb_ilt.ilt_cv_ketlain,\n    tb_ilt.ilt_idling_judge,\n    tb_ilt.ilt_idling_value,\n    tb_ilt.ilt_idling_hh,\n    tb_ilt.ilt_idling_ll,\n    tb_ilt.ilt_vacuum_judge,\n    tb_ilt.ilt_vacuum_value,\n    tb_ilt.ilt_vacuum_hh,\n    tb_ilt.ilt_vacuum_ll,\n    tb_ilt.ilt_disconnect,\n    tb_ilt.ilt_rough_idle,\n    tb_ilt.ilt_vvt_in,\n    tb_ilt.ilt_vvt_ex,\n    tb_ilt.ilt_operator,\n    tb_ilt.ilt_created_at,\n    \ttbr.*\n    FROM\n    \ttb_ilt\n    \tLEFT JOIN (\n    \tSELECT\t\n    \t\ttb_rep.rep_tb_no AS rep_tb_no,\n\t\t\ttb_rep.rep_eg_code AS rep_eg_code,\n\t\t\ttb_rep.rep_eg_no AS rep_eg_no,\n\t\t\ttb_rep.rep_group AS rep_group,\n\t\t\ttb_rep.rep_shift AS rep_shift,\n\t\t\ttb_rep.rep_cv_bensin AS rep_cv_bensin,\n\t\t\ttb_rep.rep_cv_airoli AS rep_cv_airoli,\n\t\t\ttb_rep.rep_cv_gasco AS rep_cv_gasco,\n\t\t\ttb_rep.rep_cv_campur AS rep_cv_campur,\n\t\t\ttb_rep.rep_cv_salah AS rep_cv_salah,\n\t\t\ttb_rep.rep_idling_judge AS rep_idling_judge,\n\t\t\ttb_rep.rep_idling_value AS rep_idling_value,\n\t\t\ttb_rep.rep_idling_hh AS rep_idling_hh,\n\t\t\ttb_rep.rep_idling_ll AS rep_idling_ll,\n\t\t\ttb_rep.rep_vacuum_judge AS rep_vacuum_judge,\n\t\t\ttb_rep.rep_vacuum_value AS rep_vacuum_value,\n\t\t\ttb_rep.rep_vacuum_hh AS rep_vacuum_hh,\n\t\t\ttb_rep.rep_vacuum_ll AS rep_vacuum_ll,\n\t\t\ttb_rep.rep_disconnect AS rep_disconnect,\n\t\t\ttb_rep.rep_rough_idle AS rep_rough_idle,\n\t\t\ttb_rep.rep_vvt_in AS rep_vvt_in,\n\t\t\ttb_rep.rep_vvt_ex AS rep_vvt_ex,\n\t\t\ttb_rep.rep_problem AS rep_problem,\n\t\t\ttb_rep.rep_counter AS rep_counter,\n\t\t\ttb_rep.rep_operator AS rep_operator,\n\t\t\ttb_rep.id AS rep_id,\n\t\t\tmax(tb_rep.rep_created_at) AS rep_created_at\n    \tFROM\n    \t\ttb_rep \n    \tWHERE\n    \t\ttb_rep.rep_deleted_at IS NULL AND\n\t        DATE(tb_rep.rep_created_at) = CURDATE()\n    \tGROUP BY\n    \t\ttb_rep.id, \n    \t\ttb_rep.rep_eg_no,\n    \t\ttb_rep.rep_created_at\n    \t\tORDER BY tb_rep.rep_created_at DESC\n    \t) AS tbr ON tbr.rep_eg_no = tb_ilt.ilt_eg_no \n    WHERE\n    \ttb_ilt.ilt_deleted_at IS NULL AND\n\t\tDATE(tb_ilt.ilt_created_at) = CURDATE() AND \n        tb_ilt.id < '${id}'\n    GROUP BY\n\t    tb_ilt.ilt_eg_no \n    ORDER BY\n    \ttb_ilt.id DESC\n    \tLIMIT ${msg.data.limit}\n    `;\n    msg.topic = query;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 110,
+        "y": 640,
+        "wires": [
+            [
+                "e2f69be.6bd5668"
+            ]
+        ]
+    },
+    {
+        "id": "a13c360f.d3dfa8",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query Old Modify",
+        "func": "if (msg.payload.length > 0) {\n    var i = msg.payload.length;\n    var oldData = [];\n    var monthNames = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\",\n        \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"\n    ];\n    Object.entries(msg.payload).forEach(([key, val]) => {\n        var datetime = new Date(val.ilt_created_at);\n        var day = `${datetime.getDate()}`.padStart(2, \"0\");\n        var month = `${datetime.getMonth() + 1}`.padStart(2, \"0\");\n        var monthName = monthNames[datetime.getMonth()];\n        var year = datetime.getFullYear();\n        var curDate = day + \" \" + monthName + \" \" + year;\n\n        var hours = `${datetime.getHours()}`.padStart(2, \"0\");\n        var minutes = `${datetime.getMinutes()}`.padStart(2, \"0\");\n        var seconds = `${datetime.getSeconds()}`.padStart(2, \"0\");\n        var curTime = hours + \":\" + minutes;\n\n        trace_no = `-${i}`;\n        ilt_tb_no = val.ilt_tb_no;\n        ilt_eg_no = val.ilt_eg_no;\n        ilt_eg_code = val.ilt_eg_code;\n        ilt_group = val.ilt_group;\n        ilt_shift = val.ilt_shift;\n        ilt_cv_bensin = val.ilt_cv_bensin;\n        ilt_cv_airoli = val.ilt_cv_airoli;\n        ilt_cv_gasco = val.ilt_cv_gasco;\n        ilt_cv_campur = val.ilt_cv_campur;\n        ilt_cv_salah = val.ilt_cv_salah;\n        ilt_cv_lain = val.ilt_cv_lain;\n        ilt_cv_ketlain = val.ilt_cv_ketlain;\n        ilt_idling_judge = val.ilt_idling_judge;\n        ilt_idling_value = val.ilt_idling_value;\n        ilt_idling_hh = val.ilt_idling_hh;\n        ilt_idling_ll = val.ilt_idling_ll;\n        ilt_vacuum_judge = val.ilt_vacuum_judge;\n        ilt_vacuum_value = val.ilt_vacuum_value;\n        mc_vacuum_value = val.mc_vacuum_value;\n        ilt_vacuum_hh = val.ilt_vacuum_hh;\n        ilt_vacuum_ll = val.ilt_vacuum_ll;\n        ilt_disconnect = val.ilt_disconnect;\n        ilt_rough_idle = val.ilt_rough_idle;\n        ilt_vvt_in = val.ilt_vvt_in;\n        ilt_vvt_ex = val.ilt_vvt_ex;\n        ilt_operator = val.ilt_operator;\n        cur_date = curDate;\n        cur_time = curTime;\n\n\n        var datetimerepair = new Date(val.rep_created_at);\n        var day_repair = `${datetimerepair.getDate()}`.padStart(2, \"0\");\n        var month_repair = `${datetimerepair.getMonth() + 1}`.padStart(2, \"0\");\n        var monthNameRepair = monthNames[datetimerepair.getMonth()];\n        var year_repair = datetimerepair.getFullYear();\n        var curDateRepair = day_repair + \" \" + monthNameRepair + \" \" + year_repair;\n\n        var hours_repair = `${datetimerepair.getHours()}`.padStart(2, \"0\");\n        var minutes_repair = `${datetimerepair.getMinutes()}`.padStart(2, \"0\");\n        var seconds_repair = `${datetimerepair.getSeconds()}`.padStart(2, \"0\");\n        var curTimeRepair = hours_repair + \":\" + minutes_repair;\n\n        rep_id = val.rep_id;\n        rep_tb_no = val.rep_tb_no;\n        rep_group = val.rep_group;\n        rep_shift = val.rep_shift;\n        rep_cv_bensin = val.rep_cv_bensin;\n        rep_cv_airoli = val.rep_cv_airoli;\n        rep_cv_gasco = val.rep_cv_gasco;\n        rep_cv_campur = val.rep_cv_campur;\n        rep_cv_salah = val.rep_cv_salah;\n        rep_idling_judge = val.rep_idling_judge;\n        rep_idling_value = val.rep_idling_value;\n        rep_idling_hh = val.rep_idling_hh;\n        rep_idling_ll = val.rep_idling_ll;\n        rep_vacuum_judge = val.rep_vacuum_judge;\n        rep_vacuum_value = val.rep_vacuum_value;\n        rep_vacuum_hh = val.rep_vacuum_hh;\n        rep_vacuum_ll = val.rep_vacuum_ll;\n        rep_disconnect = val.rep_disconnect;\n        rep_rough_idle = val.rep_rough_idle;\n        rep_vvt_in = val.rep_vvt_in;\n        rep_vvt_ex = val.rep_vvt_ex;\n        rep_problem = val.rep_problem;\n        rep_counter = val.rep_counter;\n        rep_operator = val.rep_operator;\n        cur_date_repair = curDateRepair;\n        cur_time_repair = curTimeRepair;\n\n        oldData.push({\n            trace_no: trace_no,\n            ilt_tb_no: ilt_tb_no,\n            ilt_eg_no: ilt_eg_no,\n            ilt_eg_code: ilt_eg_code,\n            ilt_group: ilt_group,\n            ilt_shift: ilt_shift,\n            ilt_cv_bensin: ilt_cv_bensin,\n            ilt_cv_airoli: ilt_cv_airoli,\n            ilt_cv_gasco: ilt_cv_gasco,\n            ilt_cv_campur: ilt_cv_campur,\n            ilt_cv_salah: ilt_cv_salah,\n            ilt_cv_lain: ilt_cv_lain,\n            ilt_cv_ketlain: ilt_cv_ketlain,\n            ilt_idling_judge: ilt_idling_judge,\n            ilt_idling_value: ilt_idling_value,\n            ilt_idling_hh: ilt_idling_hh,\n            ilt_idling_ll: ilt_idling_ll,\n            ilt_vacuum_judge: ilt_vacuum_judge,\n            ilt_vacuum_value: ilt_vacuum_value,\n            ilt_vacuum_hh: ilt_vacuum_hh,\n            ilt_vacuum_ll: ilt_vacuum_ll,\n            ilt_disconnect: ilt_disconnect,\n            ilt_rough_idle: ilt_rough_idle,\n            ilt_vvt_in: ilt_vvt_in,\n            ilt_vvt_ex: ilt_vvt_ex,\n            ilt_operator: ilt_operator,\n            cur_date: cur_date,\n            cur_time: cur_time,\n\n            rep_id: rep_id,\n            rep_tb_no: rep_tb_no,\n            rep_group: rep_group,\n            rep_shift: rep_shift,\n            rep_cv_bensin: rep_cv_bensin,\n            rep_cv_airoli: rep_cv_airoli,\n            rep_cv_gasco: rep_cv_gasco,\n            rep_cv_campur: rep_cv_campur,\n            rep_cv_salah: rep_cv_salah,\n            rep_idling_judge: rep_idling_judge,\n            rep_idling_value: rep_idling_value,\n            rep_idling_hh: rep_idling_hh,\n            rep_idling_ll: rep_idling_ll,\n            rep_vacuum_judge: rep_vacuum_judge,\n            rep_vacuum_value: rep_vacuum_value,\n            rep_vacuum_hh: rep_vacuum_hh,\n            rep_vacuum_ll: rep_vacuum_ll,\n            rep_disconnect: rep_disconnect,\n            rep_rough_idle: rep_rough_idle,\n            rep_vvt_in: rep_vvt_in,\n            rep_vvt_ex: rep_vvt_ex,\n            rep_problem: rep_problem,\n            rep_counter: rep_counter,\n            rep_operator: rep_operator,\n            cur_date_repair: cur_date_repair,\n            cur_time_repair: cur_time_repair,\n        });\n        i--;\n    });\n\n    msg.payload = oldData.reverse();\n\n} else {\n    msg.payload = [];\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 130,
+        "y": 720,
+        "wires": [
+            [
+                "961e2056.c94d8"
+            ]
+        ]
+    },
+    {
+        "id": "961e2056.c94d8",
+        "type": "http response",
+        "z": "664be1c9.e5408",
+        "name": "out",
+        "statusCode": "",
+        "headers": {},
+        "x": 330,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "408c4d2d.68b474",
+        "type": "http in",
+        "z": "664be1c9.e5408",
+        "name": "IN API",
+        "url": "/api/trace_engine_cur",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 1180,
+        "wires": [
+            [
+                "21025533.61abca"
+            ]
+        ]
+    },
+    {
+        "id": "21025533.61abca",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "EXPLODE",
+        "func": "var engine_number = msg.payload.engine_number;\nconsole.log(engine_number)\nvar engine_number_ba = msg.payload.engine_number_ba;\nvar engine_number_length = engine_number.length;\n// var eg_code = engine_number.slice(0, 3);\n// var eg_number = engine_number.slice(3, engine_number_length);\n\nvar query = `select * from tb_ilt where ilt_eg_no = '${engine_number}'`;\n\nmsg.data = {\n    eg_number: engine_number,\n    limit: engine_number_ba,\n    query: query\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 110,
+        "y": 1260,
+        "wires": [
+            [
+                "cf35615d.a75db"
+            ]
+        ]
+    },
+    {
+        "id": "cf35615d.a75db",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "QUERY",
+        "func": "msg.topic = msg.data.query;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 100,
+        "y": 1340,
+        "wires": [
+            [
+                "e6312010.26958"
+            ]
+        ]
+    },
+    {
+        "id": "6538e699.142de8",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query CUR",
+        "func": "if(msg.statusCode == 200){\n    var id = msg.payload[0].id;\n    var query = `\n    SELECT\n    tb_ilt.id,\n    tb_ilt.ilt_tb_no,\n    tb_ilt.ilt_eg_code,\n    tb_ilt.ilt_eg_no,\n    tb_ilt.ilt_group,\n    tb_ilt.ilt_shift,\n    tb_ilt.ilt_cv_bensin,\n    tb_ilt.ilt_cv_airoli,\n    tb_ilt.ilt_cv_gasco,\n    tb_ilt.ilt_cv_campur,\n    tb_ilt.ilt_cv_salah,\n    tb_ilt.ilt_cv_lain,\n    tb_ilt.ilt_cv_ketlain,\n    tb_ilt.ilt_idling_judge,\n    tb_ilt.ilt_idling_value,\n    tb_ilt.ilt_idling_hh,\n    tb_ilt.ilt_idling_ll,\n    tb_ilt.ilt_vacuum_judge,\n    tb_ilt.ilt_vacuum_value,\n    tb_ilt.ilt_vacuum_hh,\n    tb_ilt.ilt_vacuum_ll,\n    tb_ilt.ilt_disconnect,\n    tb_ilt.ilt_rough_idle,\n    tb_ilt.ilt_vvt_in,\n    tb_ilt.ilt_vvt_ex,\n    tb_ilt.ilt_operator,\n    tb_ilt.ilt_created_at,\n    \ttbr.*\n    FROM\n    \ttb_ilt\n    \tLEFT JOIN (\n    \tSELECT\t\n    \t\ttb_rep.rep_tb_no AS rep_tb_no,\n\t\t\ttb_rep.rep_eg_code AS rep_eg_code,\n\t\t\ttb_rep.rep_eg_no AS rep_eg_no,\n\t\t\ttb_rep.rep_group AS rep_group,\n\t\t\ttb_rep.rep_shift AS rep_shift,\n\t\t\ttb_rep.rep_cv_bensin AS rep_cv_bensin,\n\t\t\ttb_rep.rep_cv_airoli AS rep_cv_airoli,\n\t\t\ttb_rep.rep_cv_gasco AS rep_cv_gasco,\n\t\t\ttb_rep.rep_cv_campur AS rep_cv_campur,\n\t\t\ttb_rep.rep_cv_salah AS rep_cv_salah,\n\t\t\ttb_rep.rep_idling_judge AS rep_idling_judge,\n\t\t\ttb_rep.rep_idling_value AS rep_idling_value,\n\t\t\ttb_rep.rep_idling_hh AS rep_idling_hh,\n\t\t\ttb_rep.rep_idling_ll AS rep_idling_ll,\n\t\t\ttb_rep.rep_vacuum_judge AS rep_vacuum_judge,\n\t\t\ttb_rep.rep_vacuum_value AS rep_vacuum_value,\n\t\t\ttb_rep.rep_vacuum_hh AS rep_vacuum_hh,\n\t\t\ttb_rep.rep_vacuum_ll AS rep_vacuum_ll,\n\t\t\ttb_rep.rep_disconnect AS rep_disconnect,\n\t\t\ttb_rep.rep_rough_idle AS rep_rough_idle,\n\t\t\ttb_rep.rep_vvt_in AS rep_vvt_in,\n\t\t\ttb_rep.rep_vvt_ex AS rep_vvt_ex,\n\t\t\ttb_rep.rep_problem AS rep_problem,\n\t\t\ttb_rep.rep_counter AS rep_counter,\n\t\t\ttb_rep.rep_operator AS rep_operator,\n\t\t\ttb_rep.id AS rep_id,\n\t\t\tmax(tb_rep.rep_created_at) AS rep_created_at\n    \tFROM\n    \t\ttb_rep \n    \tWHERE\n    \t\ttb_rep.rep_deleted_at IS NULL AND\n\t        DATE(tb_rep.rep_created_at) = CURDATE()\n    \tGROUP BY\n    \t\ttb_rep.id, \n    \t\ttb_rep.rep_eg_no,\n    \t\ttb_rep.rep_created_at\n    \t\tORDER BY tb_rep.rep_created_at DESC\n    \t) AS tbr ON tbr.rep_eg_no = tb_ilt.ilt_eg_no \n    WHERE\n    \ttb_ilt.ilt_deleted_at IS NULL AND\n\t\tDATE(tb_ilt.ilt_created_at) = CURDATE() AND \n        tb_ilt.id = '${id}'\n    GROUP BY\n\t    tb_ilt.ilt_eg_no \n    `;\n    msg.topic = query;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 110,
+        "y": 1420,
+        "wires": [
+            [
+                "c3e88e81.fe2a9"
+            ]
+        ]
+    },
+    {
+        "id": "b8b3403d.0e43b",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query Cur Modify",
+        "func": "if (msg.payload.length > 0) {\n    var i = 0;\n    var oldData = [];\n    var monthNames = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\",\n        \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"\n    ];\n    Object.entries(msg.payload).forEach(([key, val]) => {\n        var datetime = new Date(val.ilt_created_at);\n        var day = `${datetime.getDate()}`.padStart(2, \"0\");\n        var month = `${datetime.getMonth() + 1}`.padStart(2, \"0\");\n        var monthName = monthNames[datetime.getMonth()];\n        var year = datetime.getFullYear();\n        var curDate = day + \" \" + monthName + \" \" + year;\n\n        var hours = `${datetime.getHours()}`.padStart(2, \"0\");\n        var minutes = `${datetime.getMinutes()}`.padStart(2, \"0\");\n        var seconds = `${datetime.getSeconds()}`.padStart(2, \"0\");\n        var curTime = hours + \":\" + minutes;\n\n        trace_no = `${i}`;\n        ilt_tb_no = val.ilt_tb_no;\n        ilt_eg_no = val.ilt_eg_no;\n        ilt_eg_code = val.ilt_eg_code;\n        ilt_group = val.ilt_group;\n        ilt_shift = val.ilt_shift;\n        ilt_cv_bensin = val.ilt_cv_bensin;\n        ilt_cv_airoli = val.ilt_cv_airoli;\n        ilt_cv_gasco = val.ilt_cv_gasco;\n        ilt_cv_campur = val.ilt_cv_campur;\n        ilt_cv_salah = val.ilt_cv_salah;\n        ilt_cv_lain = val.ilt_cv_lain;\n        ilt_cv_ketlain = val.ilt_cv_ketlain;\n        ilt_idling_judge = val.ilt_idling_judge;\n        ilt_idling_value = val.ilt_idling_value;\n        ilt_idling_hh = val.ilt_idling_hh;\n        ilt_idling_ll = val.ilt_idling_ll;\n        ilt_vacuum_judge = val.ilt_vacuum_judge;\n        ilt_vacuum_value = val.ilt_vacuum_value;\n        mc_vacuum_value = val.mc_vacuum_value;\n        ilt_vacuum_hh = val.ilt_vacuum_hh;\n        ilt_vacuum_ll = val.ilt_vacuum_ll;\n        ilt_disconnect = val.ilt_disconnect;\n        ilt_rough_idle = val.ilt_rough_idle;\n        ilt_vvt_in = val.ilt_vvt_in;\n        ilt_vvt_ex = val.ilt_vvt_ex;\n        ilt_operator = val.ilt_operator;\n        cur_date = curDate;\n        cur_time = curTime;\n\n\n        var datetimerepair = new Date(val.rep_created_at);\n        var day_repair = `${datetimerepair.getDate()}`.padStart(2, \"0\");\n        var month_repair = `${datetimerepair.getMonth() + 1}`.padStart(2, \"0\");\n        var monthNameRepair = monthNames[datetimerepair.getMonth()];\n        var year_repair = datetimerepair.getFullYear();\n        var curDateRepair = day_repair + \" \" + monthNameRepair + \" \" + year_repair;\n\n        var hours_repair = `${datetimerepair.getHours()}`.padStart(2, \"0\");\n        var minutes_repair = `${datetimerepair.getMinutes()}`.padStart(2, \"0\");\n        var seconds_repair = `${datetimerepair.getSeconds()}`.padStart(2, \"0\");\n        var curTimeRepair = hours_repair + \":\" + minutes_repair;\n\n        rep_id = val.rep_id;\n        rep_tb_no = val.rep_tb_no;\n        rep_group = val.rep_group;\n        rep_shift = val.rep_shift;\n        rep_cv_bensin = val.rep_cv_bensin;\n        rep_cv_airoli = val.rep_cv_airoli;\n        rep_cv_gasco = val.rep_cv_gasco;\n        rep_cv_campur = val.rep_cv_campur;\n        rep_cv_salah = val.rep_cv_salah;\n        rep_idling_judge = val.rep_idling_judge;\n        rep_idling_value = val.rep_idling_value;\n        rep_idling_hh = val.rep_idling_hh;\n        rep_idling_ll = val.rep_idling_ll;\n        rep_vacuum_judge = val.rep_vacuum_judge;\n        rep_vacuum_value = val.rep_vacuum_value;\n        rep_vacuum_hh = val.rep_vacuum_hh;\n        rep_vacuum_ll = val.rep_vacuum_ll;\n        rep_disconnect = val.rep_disconnect;\n        rep_rough_idle = val.rep_rough_idle;\n        rep_vvt_in = val.rep_vvt_in;\n        rep_vvt_ex = val.rep_vvt_ex;\n        rep_problem = val.rep_problem;\n        rep_counter = val.rep_counter;\n        rep_operator = val.rep_operator;\n        cur_date_repair = curDateRepair;\n        cur_time_repair = curTimeRepair;\n\n        oldData.push({\n            trace_no: trace_no,\n            ilt_tb_no: ilt_tb_no,\n            ilt_eg_no: ilt_eg_no,\n            ilt_eg_code: ilt_eg_code,\n            ilt_group: ilt_group,\n            ilt_shift: ilt_shift,\n            ilt_cv_bensin: ilt_cv_bensin,\n            ilt_cv_airoli: ilt_cv_airoli,\n            ilt_cv_gasco: ilt_cv_gasco,\n            ilt_cv_campur: ilt_cv_campur,\n            ilt_cv_salah: ilt_cv_salah,\n            ilt_cv_lain: ilt_cv_lain,\n            ilt_cv_ketlain: ilt_cv_ketlain,\n            ilt_idling_judge: ilt_idling_judge,\n            ilt_idling_value: ilt_idling_value,\n            ilt_idling_hh: ilt_idling_hh,\n            ilt_idling_ll: ilt_idling_ll,\n            ilt_vacuum_judge: ilt_vacuum_judge,\n            ilt_vacuum_value: ilt_vacuum_value,\n            ilt_vacuum_hh: ilt_vacuum_hh,\n            ilt_vacuum_ll: ilt_vacuum_ll,\n            ilt_disconnect: ilt_disconnect,\n            ilt_rough_idle: ilt_rough_idle,\n            ilt_vvt_in: ilt_vvt_in,\n            ilt_vvt_ex: ilt_vvt_ex,\n            ilt_operator: ilt_operator,\n            cur_date: cur_date,\n            cur_time: cur_time,\n\n            rep_id: rep_id,\n            rep_tb_no: rep_tb_no,\n            rep_group: rep_group,\n            rep_shift: rep_shift,\n            rep_cv_bensin: rep_cv_bensin,\n            rep_cv_airoli: rep_cv_airoli,\n            rep_cv_gasco: rep_cv_gasco,\n            rep_cv_campur: rep_cv_campur,\n            rep_cv_salah: rep_cv_salah,\n            rep_idling_judge: rep_idling_judge,\n            rep_idling_value: rep_idling_value,\n            rep_idling_hh: rep_idling_hh,\n            rep_idling_ll: rep_idling_ll,\n            rep_vacuum_judge: rep_vacuum_judge,\n            rep_vacuum_value: rep_vacuum_value,\n            rep_vacuum_hh: rep_vacuum_hh,\n            rep_vacuum_ll: rep_vacuum_ll,\n            rep_disconnect: rep_disconnect,\n            rep_rough_idle: rep_rough_idle,\n            rep_vvt_in: rep_vvt_in,\n            rep_vvt_ex: rep_vvt_ex,\n            rep_problem: rep_problem,\n            rep_counter: rep_counter,\n            rep_operator: rep_operator,\n            cur_date_repair: cur_date_repair,\n            cur_time_repair: cur_time_repair,\n        });\n        i++;\n    });\n\n    msg.payload = oldData.reverse();\n\n} else {\n    msg.payload = [];\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 130,
+        "y": 1500,
+        "wires": [
+            [
+                "491a2665.3a9088"
+            ]
+        ]
+    },
+    {
+        "id": "491a2665.3a9088",
+        "type": "http response",
+        "z": "664be1c9.e5408",
+        "name": "out",
+        "statusCode": "200",
+        "headers": {},
+        "x": 330,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "30cff4ce.04de8c",
+        "type": "http in",
+        "z": "664be1c9.e5408",
+        "name": "IN API",
+        "url": "/api/trace_engine_new",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 1640,
+        "wires": [
+            [
+                "6f83e1cf.93662"
+            ]
+        ]
+    },
+    {
+        "id": "6f83e1cf.93662",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "EXPLODE",
+        "func": "var engine_number = msg.payload.engine_number;\nconsole.log(engine_number)\nvar engine_number_ba = msg.payload.engine_number_ba;\nvar engine_number_length = engine_number.length;\n// var eg_code = engine_number.slice(0, 3);\n// var eg_number = engine_number.slice(3, engine_number_length);\n\nvar query = `select * from tb_ilt where ilt_eg_no = '${engine_number}'`;\n\nmsg.data = {\n    eg_number: engine_number,\n    limit: engine_number_ba,\n    query: query\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 110,
+        "y": 1720,
+        "wires": [
+            [
+                "c568cb34.847a48"
+            ]
+        ]
+    },
+    {
+        "id": "c568cb34.847a48",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "QUERY",
+        "func": "msg.topic = msg.data.query;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 100,
+        "y": 1800,
+        "wires": [
+            [
+                "74c34dbc.dba0b4"
+            ]
+        ]
+    },
+    {
+        "id": "96fda44f.15f668",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query NEW",
+        "func": "if(msg.statusCode == 200){\n    var id = msg.payload[0].id;\n    var query = `\n    SELECT\n    tb_ilt.id,\n    tb_ilt.ilt_tb_no,\n    tb_ilt.ilt_eg_code,\n    tb_ilt.ilt_eg_no,\n    tb_ilt.ilt_group,\n    tb_ilt.ilt_shift,\n    tb_ilt.ilt_cv_bensin,\n    tb_ilt.ilt_cv_airoli,\n    tb_ilt.ilt_cv_gasco,\n    tb_ilt.ilt_cv_campur,\n    tb_ilt.ilt_cv_salah,\n    tb_ilt.ilt_cv_lain,\n    tb_ilt.ilt_cv_ketlain,\n    tb_ilt.ilt_idling_judge,\n    tb_ilt.ilt_idling_value,\n    tb_ilt.ilt_idling_hh,\n    tb_ilt.ilt_idling_ll,\n    tb_ilt.ilt_vacuum_judge,\n    tb_ilt.ilt_vacuum_value,\n    tb_ilt.ilt_vacuum_hh,\n    tb_ilt.ilt_vacuum_ll,\n    tb_ilt.ilt_disconnect,\n    tb_ilt.ilt_rough_idle,\n    tb_ilt.ilt_vvt_in,\n    tb_ilt.ilt_vvt_ex,\n    tb_ilt.ilt_operator,\n    tb_ilt.ilt_created_at,\n    \ttbr.*\n    FROM\n    \ttb_ilt\n    \tLEFT JOIN (\n    \tSELECT\t\n    \t\ttb_rep.rep_tb_no AS rep_tb_no,\n\t\t\ttb_rep.rep_eg_code AS rep_eg_code,\n\t\t\ttb_rep.rep_eg_no AS rep_eg_no,\n\t\t\ttb_rep.rep_group AS rep_group,\n\t\t\ttb_rep.rep_shift AS rep_shift,\n\t\t\ttb_rep.rep_cv_bensin AS rep_cv_bensin,\n\t\t\ttb_rep.rep_cv_airoli AS rep_cv_airoli,\n\t\t\ttb_rep.rep_cv_gasco AS rep_cv_gasco,\n\t\t\ttb_rep.rep_cv_campur AS rep_cv_campur,\n\t\t\ttb_rep.rep_cv_salah AS rep_cv_salah,\n\t\t\ttb_rep.rep_idling_judge AS rep_idling_judge,\n\t\t\ttb_rep.rep_idling_value AS rep_idling_value,\n\t\t\ttb_rep.rep_idling_hh AS rep_idling_hh,\n\t\t\ttb_rep.rep_idling_ll AS rep_idling_ll,\n\t\t\ttb_rep.rep_vacuum_judge AS rep_vacuum_judge,\n\t\t\ttb_rep.rep_vacuum_value AS rep_vacuum_value,\n\t\t\ttb_rep.rep_vacuum_hh AS rep_vacuum_hh,\n\t\t\ttb_rep.rep_vacuum_ll AS rep_vacuum_ll,\n\t\t\ttb_rep.rep_disconnect AS rep_disconnect,\n\t\t\ttb_rep.rep_rough_idle AS rep_rough_idle,\n\t\t\ttb_rep.rep_vvt_in AS rep_vvt_in,\n\t\t\ttb_rep.rep_vvt_ex AS rep_vvt_ex,\n\t\t\ttb_rep.rep_problem AS rep_problem,\n\t\t\ttb_rep.rep_counter AS rep_counter,\n\t\t\ttb_rep.rep_operator AS rep_operator,\n\t\t\ttb_rep.id AS rep_id,\n\t\t\tmax(tb_rep.rep_created_at) AS rep_created_at\n    \tFROM\n    \t\ttb_rep \n    \tWHERE\n    \t\ttb_rep.rep_deleted_at IS NULL AND\n\t        DATE(tb_rep.rep_created_at) = CURDATE()\n    \tGROUP BY\n    \t\ttb_rep.id, \n    \t\ttb_rep.rep_eg_no,\n    \t\ttb_rep.rep_created_at\n    \t\tORDER BY tb_rep.rep_created_at DESC\n    \t) AS tbr ON tbr.rep_eg_no = tb_ilt.ilt_eg_no \n    WHERE\n    \ttb_ilt.ilt_deleted_at IS NULL AND\n\t\tDATE(tb_ilt.ilt_created_at) = CURDATE() AND \n        tb_ilt.id > '${id}'\n    GROUP BY\n\t    tb_ilt.ilt_eg_no \n    ORDER BY\n    \ttb_ilt.id ASC \n    \tLIMIT ${msg.data.limit}\n    `;\n    msg.topic = query;\n}else{\n    console.log(\"no\")\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 110,
+        "y": 1880,
+        "wires": [
+            [
+                "c5ea164f.e332e8"
+            ]
+        ]
+    },
+    {
+        "id": "d8844317.4f2d1",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query New Modify",
+        "func": "if (msg.payload.length > 0) {\n    var i = 1;\n    var oldData = [];\n    var monthNames = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\",\n        \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"\n    ];\n    Object.entries(msg.payload).forEach(([key, val]) => {\n        var datetime = new Date(val.ilt_created_at);\n        var day = `${datetime.getDate()}`.padStart(2, \"0\");\n        var month = `${datetime.getMonth() + 1}`.padStart(2, \"0\");\n        var monthName = monthNames[datetime.getMonth()];\n        var year = datetime.getFullYear();\n        var curDate = day + \" \" + monthName + \" \" + year;\n\n        var hours = `${datetime.getHours()}`.padStart(2, \"0\");\n        var minutes = `${datetime.getMinutes()}`.padStart(2, \"0\");\n        var seconds = `${datetime.getSeconds()}`.padStart(2, \"0\");\n        var curTime = hours + \":\" + minutes;\n\n        trace_no = `${i}`;\n        ilt_tb_no = val.ilt_tb_no;\n        ilt_eg_no = val.ilt_eg_no;\n        ilt_eg_code = val.ilt_eg_code;\n        ilt_group = val.ilt_group;\n        ilt_shift = val.ilt_shift;\n        ilt_cv_bensin = val.ilt_cv_bensin;\n        ilt_cv_airoli = val.ilt_cv_airoli;\n        ilt_cv_gasco = val.ilt_cv_gasco;\n        ilt_cv_campur = val.ilt_cv_campur;\n        ilt_cv_salah = val.ilt_cv_salah;\n        ilt_cv_lain = val.ilt_cv_lain;\n        ilt_cv_ketlain = val.ilt_cv_ketlain;\n        ilt_idling_judge = val.ilt_idling_judge;\n        ilt_idling_value = val.ilt_idling_value;\n        ilt_idling_hh = val.ilt_idling_hh;\n        ilt_idling_ll = val.ilt_idling_ll;\n        ilt_vacuum_judge = val.ilt_vacuum_judge;\n        ilt_vacuum_value = val.ilt_vacuum_value;\n        mc_vacuum_value = val.mc_vacuum_value;\n        ilt_vacuum_hh = val.ilt_vacuum_hh;\n        ilt_vacuum_ll = val.ilt_vacuum_ll;\n        ilt_disconnect = val.ilt_disconnect;\n        ilt_rough_idle = val.ilt_rough_idle;\n        ilt_vvt_in = val.ilt_vvt_in;\n        ilt_vvt_ex = val.ilt_vvt_ex;\n        ilt_operator = val.ilt_operator;\n        cur_date = curDate;\n        cur_time = curTime;\n\n\n        var datetimerepair = new Date(val.rep_created_at);\n        var day_repair = `${datetimerepair.getDate()}`.padStart(2, \"0\");\n        var month_repair = `${datetimerepair.getMonth() + 1}`.padStart(2, \"0\");\n        var monthNameRepair = monthNames[datetimerepair.getMonth()];\n        var year_repair = datetimerepair.getFullYear();\n        var curDateRepair = day_repair + \" \" + monthNameRepair + \" \" + year_repair;\n\n        var hours_repair = `${datetimerepair.getHours()}`.padStart(2, \"0\");\n        var minutes_repair = `${datetimerepair.getMinutes()}`.padStart(2, \"0\");\n        var seconds_repair = `${datetimerepair.getSeconds()}`.padStart(2, \"0\");\n        var curTimeRepair = hours_repair + \":\" + minutes_repair;\n\n        rep_id = val.rep_id;\n        rep_tb_no = val.rep_tb_no;\n        rep_group = val.rep_group;\n        rep_shift = val.rep_shift;\n        rep_cv_bensin = val.rep_cv_bensin;\n        rep_cv_airoli = val.rep_cv_airoli;\n        rep_cv_gasco = val.rep_cv_gasco;\n        rep_cv_campur = val.rep_cv_campur;\n        rep_cv_salah = val.rep_cv_salah;\n        rep_idling_judge = val.rep_idling_judge;\n        rep_idling_value = val.rep_idling_value;\n        rep_idling_hh = val.rep_idling_hh;\n        rep_idling_ll = val.rep_idling_ll;\n        rep_vacuum_judge = val.rep_vacuum_judge;\n        rep_vacuum_value = val.rep_vacuum_value;\n        rep_vacuum_hh = val.rep_vacuum_hh;\n        rep_vacuum_ll = val.rep_vacuum_ll;\n        rep_disconnect = val.rep_disconnect;\n        rep_rough_idle = val.rep_rough_idle;\n        rep_vvt_in = val.rep_vvt_in;\n        rep_vvt_ex = val.rep_vvt_ex;\n        rep_problem = val.rep_problem;\n        rep_counter = val.rep_counter;\n        rep_operator = val.rep_operator;\n        cur_date_repair = curDateRepair;\n        cur_time_repair = curTimeRepair;\n\n        oldData.push({\n            trace_no: trace_no,\n            ilt_tb_no: ilt_tb_no,\n            ilt_eg_no: ilt_eg_no,\n            ilt_eg_code: ilt_eg_code,\n            ilt_group: ilt_group,\n            ilt_shift: ilt_shift,\n            ilt_cv_bensin: ilt_cv_bensin,\n            ilt_cv_airoli: ilt_cv_airoli,\n            ilt_cv_gasco: ilt_cv_gasco,\n            ilt_cv_campur: ilt_cv_campur,\n            ilt_cv_salah: ilt_cv_salah,\n            ilt_cv_lain: ilt_cv_lain,\n            ilt_cv_ketlain: ilt_cv_ketlain,\n            ilt_idling_judge: ilt_idling_judge,\n            ilt_idling_value: ilt_idling_value,\n            ilt_idling_hh: ilt_idling_hh,\n            ilt_idling_ll: ilt_idling_ll,\n            ilt_vacuum_judge: ilt_vacuum_judge,\n            ilt_vacuum_value: ilt_vacuum_value,\n            ilt_vacuum_hh: ilt_vacuum_hh,\n            ilt_vacuum_ll: ilt_vacuum_ll,\n            ilt_disconnect: ilt_disconnect,\n            ilt_rough_idle: ilt_rough_idle,\n            ilt_vvt_in: ilt_vvt_in,\n            ilt_vvt_ex: ilt_vvt_ex,\n            ilt_operator: ilt_operator,\n            cur_date: cur_date,\n            cur_time: cur_time,\n\n            rep_id: rep_id,\n            rep_tb_no: rep_tb_no,\n            rep_group: rep_group,\n            rep_shift: rep_shift,\n            rep_cv_bensin: rep_cv_bensin,\n            rep_cv_airoli: rep_cv_airoli,\n            rep_cv_gasco: rep_cv_gasco,\n            rep_cv_campur: rep_cv_campur,\n            rep_cv_salah: rep_cv_salah,\n            rep_idling_judge: rep_idling_judge,\n            rep_idling_value: rep_idling_value,\n            rep_idling_hh: rep_idling_hh,\n            rep_idling_ll: rep_idling_ll,\n            rep_vacuum_judge: rep_vacuum_judge,\n            rep_vacuum_value: rep_vacuum_value,\n            rep_vacuum_hh: rep_vacuum_hh,\n            rep_vacuum_ll: rep_vacuum_ll,\n            rep_disconnect: rep_disconnect,\n            rep_rough_idle: rep_rough_idle,\n            rep_vvt_in: rep_vvt_in,\n            rep_vvt_ex: rep_vvt_ex,\n            rep_problem: rep_problem,\n            rep_counter: rep_counter,\n            rep_operator: rep_operator,\n            cur_date_repair: cur_date_repair,\n            cur_time_repair: cur_time_repair,\n        });\n        i++;\n    });\n\n    msg.payload = oldData.reverse();\n\n} else {\n    msg.payload = [];\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 130,
+        "y": 1960,
+        "wires": [
+            [
+                "e50ef3f0.dc416"
+            ]
+        ]
+    },
+    {
+        "id": "e50ef3f0.dc416",
+        "type": "http response",
+        "z": "664be1c9.e5408",
+        "name": "out",
+        "statusCode": "200",
+        "headers": {},
+        "x": 330,
+        "y": 1960,
+        "wires": []
+    },
+    {
+        "id": "3763911.08d4f6e",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "func": "if(msg.payload.length == 0){\n    msg.statusCode = 404;\n}else{\n    msg.statusCode = 200;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 540,
+        "y": 520,
+        "wires": [
+            [
+                "b166a005.95267"
+            ]
+        ]
+    },
+    {
+        "id": "3fbfc827.233688",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "func": "if(msg.payload.length == 0){\n    msg.statusCode = 404;\n}else{\n    msg.statusCode = 200;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 580,
+        "y": 1340,
+        "wires": [
+            [
+                "6538e699.142de8"
+            ]
+        ]
+    },
+    {
+        "id": "aefa5fdd.15802",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "func": "if(msg.payload.length == 0){\n    msg.statusCode = 404;\n}else{\n    msg.statusCode = 200;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 580,
+        "y": 1800,
+        "wires": [
+            [
+                "96fda44f.15f668"
+            ]
+        ]
+    },
+    {
+        "id": "41a49640.85fbb8",
+        "type": "http in",
+        "z": "664be1c9.e5408",
+        "name": "IN API",
+        "url": "/api/daily_filter",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 2080,
+        "wires": [
+            [
+                "76e266f8.c6d418"
+            ]
+        ]
+    },
+    {
+        "id": "76e266f8.c6d418",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query",
+        "func": "msg.from = msg.payload.from;\nmsg.to = msg.payload.to;\n\nmsg.topic = `\nSELECT\n    tb_ilt.id,\n    tb_ilt.ilt_tb_no,\n    tb_ilt.ilt_eg_code,\n    tb_ilt.ilt_eg_no,\n    tb_ilt.ilt_group,\n    tb_ilt.ilt_shift,\n    tb_ilt.ilt_cv_bensin,\n    tb_ilt.ilt_cv_airoli,\n    tb_ilt.ilt_cv_gasco,\n    tb_ilt.ilt_cv_campur,\n    tb_ilt.ilt_cv_salah,\n    tb_ilt.ilt_cv_lain,\n    tb_ilt.ilt_cv_ketlain,\n    tb_ilt.ilt_idling_judge,\n    tb_ilt.ilt_idling_value,\n    tb_ilt.ilt_idling_hh,\n    tb_ilt.ilt_idling_ll,\n    tb_ilt.ilt_vacuum_judge,\n    tb_ilt.ilt_vacuum_value,\n    tb_ilt.ilt_vacuum_hh,\n    tb_ilt.ilt_vacuum_ll,\n    tb_ilt.ilt_disconnect,\n    tb_ilt.ilt_rough_idle,\n    tb_ilt.ilt_vvt_in,\n    tb_ilt.ilt_vvt_ex,\n    tb_ilt.ilt_operator,\n    tb_ilt.ilt_created_at,\n    tbr.*\nFROM\n    tb_ilt\n    LEFT JOIN (\n        SELECT\n        tb_rep.rep_tb_no AS rep_tb_no,\n        tb_rep.rep_eg_code AS rep_eg_code,\n        tb_rep.rep_eg_no AS rep_eg_no,\n        tb_rep.rep_group AS rep_group,\n        tb_rep.rep_shift AS rep_shift,\n        tb_rep.rep_cv_bensin AS rep_cv_bensin,\n        tb_rep.rep_cv_airoli AS rep_cv_airoli,\n        tb_rep.rep_cv_gasco AS rep_cv_gasco,\n        tb_rep.rep_cv_campur AS rep_cv_campur,\n        tb_rep.rep_cv_salah AS rep_cv_salah,\n        tb_rep.rep_idling_judge AS rep_idling_judge,\n        tb_rep.rep_idling_value AS rep_idling_value,\n        tb_rep.rep_idling_hh AS rep_idling_hh,\n        tb_rep.rep_idling_ll AS rep_idling_ll,\n        tb_rep.rep_vacuum_judge AS rep_vacuum_judge,\n        tb_rep.rep_vacuum_value AS rep_vacuum_value,\n        tb_rep.rep_vacuum_hh AS rep_vacuum_hh,\n        tb_rep.rep_vacuum_ll AS rep_vacuum_ll,\n        tb_rep.rep_disconnect AS rep_disconnect,\n        tb_rep.rep_rough_idle AS rep_rough_idle,\n        tb_rep.rep_vvt_in AS rep_vvt_in,\n        tb_rep.rep_vvt_ex AS rep_vvt_ex,\n        tb_rep.rep_problem AS rep_problem,\n        tb_rep.rep_counter AS rep_counter,\n        tb_rep.rep_operator AS rep_operator,\n        tb_rep.id AS rep_id,\n        max(tb_rep.rep_created_at) AS rep_created_at\n    FROM\n        tb_rep\n    WHERE\n                tb_rep.rep_deleted_at IS NULL AND\n        DATE(tb_rep.rep_created_at) = CURDATE()\n    GROUP BY\n                tb_rep.id,\n                tb_rep.rep_eg_no,\n                tb_rep.rep_created_at\n    ORDER BY tb_rep.rep_created_at DESC\n        ) AS tbr ON tbr.rep_eg_no = tb_ilt.ilt_eg_no\nWHERE\n        tb_ilt.ilt_deleted_at IS NULL AND\n    DATE(tb_ilt.ilt_created_at) >= '${msg.payload.from}' AND\n    DATE(tb_ilt.ilt_created_at) <= '${msg.payload.to}'\nGROUP BY\n        tb_ilt.ilt_eg_no\nORDER BY\n        tb_ilt.id DESC\n`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 270,
+        "y": 2080,
+        "wires": [
+            [
+                "2fc3fecf.93e7c2"
+            ]
+        ]
+    },
+    {
+        "id": "36536e21.bdacd2",
+        "type": "http response",
+        "z": "664be1c9.e5408",
+        "name": "out",
+        "statusCode": "200",
+        "headers": {},
+        "x": 330,
+        "y": 2320,
+        "wires": []
+    },
+    {
+        "id": "84c4b6a5.9abe68",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Set statusCode",
+        "func": "if(msg.payload.length == 0){\n    msg.statusCode = 404;\n}else{\n    msg.statusCode = 200;\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 360,
+        "y": 2200,
+        "wires": [
+            [
+                "92ec5e3e.a0f09"
+            ]
+        ]
+    },
+    {
+        "id": "92ec5e3e.a0f09",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Generate Table",
+        "func": "if (msg.payload.length > 0) {\n    let resLength = msg.payload.length;\n    let monthNames = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\",\n        \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"\n    ];\n    let tHead = `\n    <table border=\"1\" id=\"table_daily_report\" class=\"table table-bordered table-custom table-condensed bg-white\">\n    <caption>Daily Report - ${msg.from} ~ ${msg.to}</caption>\n    <thead class=\"bg-dark text-white\">\n        <tr>\n            <th rowspan=\"4\">#</th>\n            <th rowspan=\"4\">ENGINE NO</th>\n            <th rowspan=\"4\">TYPE</th>\n            <th colspan=\"18\">INLINE TESTING</th>\n            <th colspan=\"18\">REPAIR</th>\n        </tr>\n        <tr>\n            <th rowspan=\"3\">TB #</th>\n            <th rowspan=\"3\">TIME</th>\n            <th rowspan=\"3\">GROUP</th>\n            <th rowspan=\"3\">SHIFT</th>\n            <th colspan=\"7\">CHECK VISUAL</th>\n            <th colspan=\"6\">MONITORING CHECKER</th>\n            <th rowspan=\"3\">CHECKER</th>\n\n            <th rowspan=\"3\">TB #</th>\n            <th rowspan=\"3\">TIME</th>\n            <th rowspan=\"3\">GROUP</th>\n            <th rowspan=\"3\">SHIFT</th>\n            <th colspan=\"6\">CHECK VISUAL</th>\n            <th colspan=\"5\">MONITORING CHECKER</th>\n            <th rowspan=\"3\">PROBLEM</th>\n            <th rowspan=\"3\">COUNTER MEASURE</th>\n            <th rowspan=\"3\">CHECKER</th>\n        </tr>\n        <tr>\n            <th colspan=\"3\">KEBOCORAN</th>\n            <th rowspan=\"2\">AIR/OLI CAMPUR</th>\n            <th rowspan=\"2\">SALAH PASANG</th>\n            <th rowspan=\"2\">LAIN-LAIN</th>\n            <th rowspan=\"2\">KET.LAIN-LAIN</th>\n\n            <th rowspan=\"2\">IDLING</th>\n            <th rowspan=\"2\">VACUUM</th>\n            <th rowspan=\"2\">DISC.</th>\n            <th rowspan=\"2\">ROUGH IDLE</th>\n            <th colspan=\"2\" colspan=\"2\">VVT CHECKER</th>\n\n            <th colspan=\"3\">KEBOCORAN</th>\n            <th rowspan=\"2\">AIR/OLI CAMPUR</th>\n            <th rowspan=\"2\">SALAH PASANG</th>\n            <th rowspan=\"2\">IDLING</th>\n            <th rowspan=\"2\">VACUUM</th>\n            <th rowspan=\"2\">DISC.</th>\n            <th rowspan=\"2\">ROUGH IDLE</th>\n            <th colspan=\"2\">VVT CHECKER</th>\n        </tr>\n        <tr>\n            <th>BENSIN</th>\n            <th>AIR/OLI</th>\n            <th>GAS/CO</th>\n            <th>IN</th>\n            <th>EX</th>\n\n            <th>BENSIN</th>\n            <th>AIR/OLI</th>\n            <th>GAS/CO</th>\n            <th>IN</th>\n            <th>EX</th>\n        </tr>\n    </thead>\n    <tbody class=\"bg-white\">`;\n\n    let htmlDailyReport = '';\n    htmlDailyReport = tHead;\n\n    Object.entries(msg.payload).forEach(([key, val]) => {\n\n        console.log(\"adam\");\n        console.log(val);\n\n        var datetime = new Date(val.ilt_created_at);\n        var day = `${datetime.getDate()}`.padStart(2, \"0\");\n        var monthName = monthNames[datetime.getMonth()];\n        var year = datetime.getFullYear();\n        var curDate = day + \" \" + monthName + \" \" + year;\n\n        var hours = `${datetime.getHours()}`.padStart(2, \"0\");\n        var minutes = `${datetime.getMinutes()}`.padStart(2, \"0\");\n        var curTime = hours + \":\" + minutes;\n\n\n        var datetimerepair = new Date(val.rep_created_at);\n        var day_repair = `${datetimerepair.getDate()}`.padStart(2, \"0\");\n        var monthNameRepair = monthNames[datetimerepair.getMonth()];\n        var year_repair = datetimerepair.getFullYear();\n        var curDateRepair = day_repair + \" \" + monthNameRepair + \" \" + year_repair;\n\n        var hours_repair = `${datetimerepair.getHours()}`.padStart(2, \"0\");\n        var minutes_repair = `${datetimerepair.getMinutes()}`.padStart(2, \"0\");\n        var curTimeRepair = hours_repair + \":\" + minutes_repair;\n\n        htmlDailyReport += `\n        <tr>\n            <td>${resLength}</td>\n            <td>${val.ilt_eg_no}</td>\n            <td>${val.ilt_eg_code}</td>\n            <td>${val.ilt_tb_no}</td>\n            <td>${curTime}</td>\n            <td>${val.ilt_group.toUpperCase()}</td>\n            <td>${val.ilt_shift.toUpperCase()}</td>\n            <td>${(val.ilt_cv_bensin[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_cv_airoli[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_cv_gasco[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_cv_campur[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_cv_salah[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_cv_lain[0] == 1) ? \"NG\" : \"OK\"}</td>\n            <td>${(val.ilt_cv_lain[0] == 1) ? val.ilt_cv_ketlain : \"\"}</td>\n            <td>${(val.ilt_idling_judge[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_vacuum_judge[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_disconnect[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_rough_idle[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_vvt_in[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${(val.ilt_vvt_ex[0] == 1) ? \"OK\" : \"NG\"}</td>\n            <td>${val.ilt_operator}</td>\n        `;\n\n        if (val.rep_id != null) {\n            htmlDailyReport += `\n                <td>${val.rep_tb_no}</td>\n                <td>${curTimeRepair}</td>\n                <td>${val.rep_group.toUpperCase()}</td>\n                <td>${val.rep_shift.toUpperCase()}</td>\n                <td>${(val.rep_cv_bensin[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_cv_airoli[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_cv_gasco[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_cv_campur[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_cv_salah[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_idling_judge[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_idling_judge[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_disconnect[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_rough_idle[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_vvt_in[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${(val.rep_vvt_ex[0] == 1) ? \"OK\" : \"NG\"}</td>\n                <td>${val.rep_problem}</td>\n                <td>${val.rep_counter}</td>\n                <td>${val.rep_operator}</td>\n            </tr>\n            `;\n        } else {\n            htmlDailyReport += `\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n                <td></td>\n            </tr>\n            `;\n        }\n        resLength--;\n    });\n\n    htmlDailyReport += `</tbody></table>`;\n    msg.payload = JSON.stringify({\n        data: htmlDailyReport\n    });\n\n} else {\n    msg.payload = JSON.stringify({\n        data: null\n    });\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 120,
+        "y": 2320,
+        "wires": [
+            [
+                "36536e21.bdacd2",
+                "680adf68.6b5d8"
+            ]
+        ]
+    },
+    {
+        "id": "680adf68.6b5d8",
+        "type": "debug",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 330,
+        "y": 2420,
+        "wires": []
+    },
+    {
+        "id": "9d705957.ae7b78",
+        "type": "http in",
+        "z": "664be1c9.e5408",
+        "name": "IN API",
+        "url": "/api/store_manual",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 2540,
+        "wires": [
+            [
+                "489ef912.f8e868"
+            ]
+        ]
+    },
+    {
+        "id": "783fa00c.46343",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query",
+        "func": "msg.data_date = msg.payload.data_date;\nmsg.data_time = msg.payload.data_time;\nmsg.ilt_operator_man = msg.payload.ilt_operator_man;\nmsg.ilt_eg_no_man = msg.payload.ilt_eg_no_man;\nmsg.ilt_eg_code_man = msg.payload.ilt_eg_code_man;\nmsg.ilt_tb_no_man = msg.payload.ilt_tb_no_man;\nmsg.ilt_group_man = msg.payload.ilt_group_man;\nmsg.ilt_shift_man = msg.payload.ilt_shift_man;\nmsg.ilt_cv_bensin_man = msg.payload.ilt_cv_bensin_man;\nmsg.ilt_cv_airoli_man = msg.payload.ilt_cv_airoli_man;\nmsg.ilt_cv_gasco_man = msg.payload.ilt_cv_gasco_man;\nmsg.ilt_cv_campur_man = msg.payload.ilt_cv_campur_man;\nmsg.ilt_cv_salah_man = msg.payload.ilt_cv_salah_man;\nmsg.ilt_cv_lain_man = msg.payload.ilt_cv_lain_man;\nmsg.ilt_cv_ketlain_man = msg.payload.ilt_cv_ketlain_man;\nmsg.ilt_idling_judge_man = msg.payload.ilt_idling_judge_man;\nmsg.ilt_idling_value_man = msg.payload.ilt_idling_value_man;\nmsg.ilt_vacuum_judge_man = msg.payload.ilt_vacuum_judge_man;\nmsg.ilt_vacuum_value_man = msg.payload.ilt_vacuum_value_man;\nmsg.ilt_disconnect_man = msg.payload.ilt_disconnect_man;\nmsg.ilt_rough_idle_man = msg.payload.ilt_rough_idle_man;\nmsg.ilt_vvt_in_man = msg.payload.ilt_vvt_in_man;\nmsg.ilt_vvt_ex_man = msg.payload.ilt_vvt_ex_man;\ncreated_at = msg.data_date + ' ' + msg.data_time;\n\nmsg.topic = `\nINSERT INTO tb_ilt VALUES (\n    '',\n    '${msg.ilt_tb_no_man}',\n    '${msg.ilt_eg_code_man}',\n    '${msg.ilt_eg_no_man}',\n    '${msg.ilt_group_man}',\n    '${msg.ilt_shift_man}',\n    \n    '${msg.ilt_cv_bensin_man}',\n    '${msg.ilt_cv_airoli_man}',\n    '${msg.ilt_cv_gasco_man}',\n    '${msg.ilt_cv_campur_man}',\n    '${msg.ilt_cv_salah_man}',\n    '${msg.ilt_cv_lain_man}',\n    '${msg.ilt_cv_ketlain_man}',\n    '${msg.ilt_idling_judge_man}',\n    '${msg.ilt_idling_value_man}',\n    '',\n    '',\n    '${msg.ilt_vacuum_judge_man}',\n    '${msg.ilt_vacuum_value_man}',\n    '',\n    '',\n    '${msg.ilt_disconnect_man}',\n    '${msg.ilt_rough_idle_man}',\n    '${msg.ilt_vvt_in_man}',\n    '${msg.ilt_vvt_ex_man}',\n    '${msg.ilt_operator_man}',\n    'yes',\n    '${created_at}',\n    null\n)`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 490,
+        "y": 2500,
+        "wires": [
+            [
+                "32845f9c.7ed0d"
+            ]
+        ]
+    },
+    {
+        "id": "6edb29ae.3dd478",
+        "type": "http response",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 920,
+        "y": 2540,
+        "wires": []
+    },
+    {
+        "id": "b310d12c.42e04",
+        "type": "debug",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 2660,
+        "wires": []
+    },
+    {
+        "id": "489ef912.f8e868",
+        "type": "switch",
+        "z": "664be1c9.e5408",
+        "name": "",
+        "property": "payload.form_type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "inline",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "repair",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 290,
+        "y": 2540,
+        "wires": [
+            [
+                "783fa00c.46343"
+            ],
+            [
+                "c63f43ea.b491"
+            ]
+        ]
+    },
+    {
+        "id": "c63f43ea.b491",
+        "type": "function",
+        "z": "664be1c9.e5408",
+        "name": "Query",
+        "func": "msg.data_date = msg.payload.rep_data_date;\nmsg.data_time = msg.payload.rep_data_time;\nmsg.rep_operator_man = msg.payload.rep_operator_man;\nmsg.rep_eg_no_man = msg.payload.rep_eg_no_man;\nmsg.rep_eg_code_man = msg.payload.rep_eg_code_man;\nmsg.rep_tb_no_man = msg.payload.rep_tb_no_man;\nmsg.rep_group_man = msg.payload.rep_group_man;\nmsg.rep_shift_man = msg.payload.rep_shift_man;\nmsg.rep_cv_bensin_man = msg.payload.rep_cv_bensin_man;\nmsg.rep_cv_airoli_man = msg.payload.rep_cv_airoli_man;\nmsg.rep_cv_gasco_man = msg.payload.rep_cv_gasco_man;\nmsg.rep_cv_campur_man = msg.payload.rep_cv_campur_man;\nmsg.rep_cv_salah_man = msg.payload.rep_cv_salah_man;\nmsg.rep_cv_lain_man = msg.payload.rep_cv_lain_man;\nmsg.rep_cv_ketlain_man = msg.payload.rep_cv_ketlain_man;\nmsg.rep_idling_judge_man = msg.payload.rep_idling_judge_man;\nmsg.rep_idling_value_man = msg.payload.rep_idling_value_man;\nmsg.rep_vacuum_judge_man = msg.payload.rep_vacuum_judge_man;\nmsg.rep_vacuum_value_man = msg.payload.rep_vacuum_value_man;\nmsg.rep_disconnect_man = msg.payload.rep_disconnect_man;\nmsg.rep_rough_idle_man = msg.payload.rep_rough_idle_man;\nmsg.rep_vvt_in_man = msg.payload.rep_vvt_in_man;\nmsg.rep_vvt_ex_man = msg.payload.rep_vvt_ex_man;\nmsg.rep_problem_man = msg.payload.rep_problem_man;\nmsg.rep_counter_man = msg.payload.rep_counter_man;\ncreated_at = msg.data_date + ' ' + msg.data_time;\n\nmsg.topic = `\nINSERT INTO tb_rep VALUES (\n    '',\n    '${msg.rep_tb_no_man}',\n    '${msg.rep_eg_code_man}',\n    '${msg.rep_eg_no_man}',\n    '${msg.rep_group_man}',\n    '${msg.rep_shift_man}',\n    \n    '${msg.rep_cv_bensin_man}',\n    '${msg.rep_cv_airoli_man}',\n    '${msg.rep_cv_gasco_man}',\n    '${msg.rep_cv_campur_man}',\n    '${msg.rep_cv_salah_man}',\n    '${msg.rep_idling_judge_man}',\n    '${msg.rep_idling_value_man}',\n    '',\n    '',\n    '${msg.rep_vacuum_judge_man}',\n    '${msg.rep_vacuum_value_man}',\n    '',\n    '',\n    '${msg.rep_disconnect_man}',\n    '${msg.rep_rough_idle_man}',\n    '${msg.rep_vvt_in_man}',\n    '${msg.rep_vvt_ex_man}',\n    '${msg.rep_problem_man}',\n    '${msg.rep_counter_man}',\n    '${msg.rep_operator_man}',\n    'yes',\n    '${created_at}',\n    null\n)`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 490,
+        "y": 2600,
+        "wires": [
+            [
+                "32845f9c.7ed0d",
+                "b310d12c.42e04"
+            ]
+        ]
+    },
+    {
+        "id": "6baf77c4.7bb5c8",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 460,
+        "y": 40,
+        "wires": [
+            [
+                "de620e87.efa63"
+            ]
+        ]
+    },
+    {
+        "id": "c46cbc62.3029f",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "52f42ca9.53dea4"
+            ]
+        ]
+    },
+    {
+        "id": "ce2c4ec4.e879d",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 320,
+        "y": 520,
+        "wires": [
+            [
+                "3763911.08d4f6e"
+            ]
+        ]
+    },
+    {
+        "id": "e2f69be.6bd5668",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 340,
+        "y": 640,
+        "wires": [
+            [
+                "a13c360f.d3dfa8"
+            ]
+        ]
+    },
+    {
+        "id": "e6312010.26958",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 360,
+        "y": 1340,
+        "wires": [
+            [
+                "3fbfc827.233688"
+            ]
+        ]
+    },
+    {
+        "id": "c3e88e81.fe2a9",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 360,
+        "y": 1420,
+        "wires": [
+            [
+                "b8b3403d.0e43b"
+            ]
+        ]
+    },
+    {
+        "id": "74c34dbc.dba0b4",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 360,
+        "y": 1800,
+        "wires": [
+            [
+                "aefa5fdd.15802"
+            ]
+        ]
+    },
+    {
+        "id": "c5ea164f.e332e8",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 360,
+        "y": 1880,
+        "wires": [
+            [
+                "d8844317.4f2d1"
+            ]
+        ]
+    },
+    {
+        "id": "2fc3fecf.93e7c2",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 120,
+        "y": 2200,
+        "wires": [
+            [
+                "84c4b6a5.9abe68"
+            ]
+        ]
+    },
+    {
+        "id": "32845f9c.7ed0d",
+        "type": "mysql",
+        "z": "664be1c9.e5408",
+        "mydb": "73fe4894.b72678",
+        "name": "DB testbenchx",
+        "x": 700,
+        "y": 2540,
+        "wires": [
+            [
+                "6edb29ae.3dd478"
+            ]
+        ]
+    }
+]

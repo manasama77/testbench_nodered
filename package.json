@@ -2,7 +2,9 @@
     "name": "testbench_nodered",
     "description": "A Node-RED Project",
     "version": "0.0.1",
-    "dependencies": {},
+    "dependencies": {
+        "node-red-node-mysql": "0.1.1"
+    },
     "node-red": {
         "settings": {
             "flowFile": "flow_testbench_270.json",
